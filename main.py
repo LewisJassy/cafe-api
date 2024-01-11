@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+import random
 
 app = Flask(__name__)
 
@@ -34,7 +35,32 @@ def home():
 
 
 # HTTP GET - Read Record
+@app.route("/random", methods=["GET", "POST"])
+def get_random_cafe():
+    if request.method == 'GET':
+        cafe = db.session.execute(db.select(Cafe)).scalars().all()
+        random_cafe = random.choice(cafe)
+        return jsonify(cafe = {
+            "id": random_cafe.id,
+        "name": random_cafe.name,
+        "map_url": random_cafe.map_url,
+        "img_url": random_cafe.img_url,
+        "location": random_cafe.location,
+        "seats": random_cafe.seats,
+        "has_toilet": random_cafe.has_toilet,
+        "has_wifi": random_cafe.has_wifi,
+        "has_sockets": random_cafe.has_sockets,
+        "can_take_calls": random_cafe.can_take_calls,
+        "coffee_price": random_cafe.coffee_price,
+        })
 
+
+@app.route('/all', methods=["GET", "POST"])
+def get_all():
+        cafes = db.session # retrieve databae session
+        data = cafes.dict().scalars().all() # Fetching data from the database
+        return jsonify(data) # this convert the data(list of dictionaries) into JSON format
+        
 # HTTP POST - Create Record
 
 # HTTP PUT/PATCH - Update Record
